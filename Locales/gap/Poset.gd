@@ -123,4 +123,31 @@ DeclareOperation( "IsEqualForObjectsIfIsHomSetInhabited",
 
 # @Section Tools
 
+DeclareOperation( "RelativeMeet",
+        [ IsPosetCategory and IsFiniteCategory, IsList, IsList ] );
+
+DeclareOperation( "RelativeJoin",
+        [ IsPosetCategory and IsFiniteCategory, IsList, IsList ] );
+
+DeclareOperation( "UpSets",
+        [ IsPosetCategory and IsFiniteCategory ] );
+
+DeclareOperation( "UpSetsAsDistributiveExtension",
+        [ IsList ] );
+
+DeclareOperation( "EmbeddingInDistributiveExtension",
+        [ IsList, IsObject ] );
+
+DeclareOperation( "DownSets",
+        [ IsPosetCategory and IsFiniteCategory ] );
+
+DeclareOperation( "RelativeFiltersOfPoset",
+        [ IsPosetCategory and IsFiniteCategory, IsList ] );
+
+DeclareOperation( "RelativeIdealsOfPoset",
+        [ IsPosetCategory and IsFiniteCategory, IsList ] );
+
+DeclareOperation( "RelativePrimeFiltersOfPoset",
+        [ IsPosetCategory and IsFiniteCategory, IsList, IsList ] );
+
 DeclareGlobalVariable( "POSET_METHOD_NAME_RECORD" );

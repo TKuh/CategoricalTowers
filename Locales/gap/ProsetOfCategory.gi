@@ -207,7 +207,8 @@ InstallMethod( CreateProsetOrPosetOfCategory,
     local skeletal, stable, category_filter, category_object_filter, category_morphism_filter,
           name, create_func_morphism,
           list_of_operations_to_install, skip, func, pos,
-          properties, P, object_constructor, object_datum, morphism_constructor, morphism_datum;
+          properties, P, object_constructor, object_datum, morphism_constructor, morphism_datum,
+          find_meets_and_joins, objects_of_poset, obj1, obj2;
     
     skeletal := CAP_INTERNAL_RETURN_OPTION_OR_DEFAULT( "skeletal", false );
     
@@ -407,6 +408,10 @@ InstallMethod( CreateProsetOrPosetOfCategory,
     
     P!.compiler_hints.category_attribute_names := [
         "AmbientCategory",
+        "ExistingMeets",
+        "ExistingJoins",
+        "BottomElement",
+        "TopElement"
     ];
     
     SetAmbientCategory( P, C );
@@ -417,6 +422,24 @@ InstallMethod( CreateProsetOrPosetOfCategory,
           function( P, S, T )
             
             return IsEqualForObjects( AmbientCategory( P ), UnderlyingCell( S ), UnderlyingCell( T ) );
+            
+        end );
+        
+    fi;
+    
+    if skeletal and CanCompute( C, "IsHomSetInhabited" ) then
+        
+        AddIsEqualForObjects( P,
+          function( P, S, T )
+            
+            return IsHomSetInhabited( AmbientCategory( P ), UnderlyingCell( S ), UnderlyingCell( T ) ) and IsHomSetInhabited( AmbientCategory( P ), UnderlyingCell( T ), UnderlyingCell( S ) );
+            
+        end );
+        
+        AddAreIsomorphicForObjectsIfIsHomSetInhabited( P,
+          function( P, S, T )
+            
+            return IsHomSetInhabited( AmbientCategory( P ), UnderlyingCell( T ), UnderlyingCell( S ) );
             
         end );
         
@@ -441,6 +464,111 @@ InstallMethod( CreateProsetOrPosetOfCategory,
                 return List( SetOfObjects( AmbientCategory( P ) ), o -> ObjectConstructor( P, o ) );
                 
             end );
+            
+        fi;
+        
+    fi;
+    
+    find_meets_and_joins := CAP_INTERNAL_RETURN_OPTION_OR_DEFAULT( "find_meets_and_joins", false );
+    
+    if IsIdenticalObj( find_meets_and_joins, true ) then
+        
+        if not IsFiniteCategory( P ) then
+            
+            Error( "Can only compute meets and joins in finite posets." );
+            
+        fi;
+        
+        if not CanCompute( P, "IsHomSetInhabited" ) then
+            
+            Error( "Can not compute the preorder." );
+            
+        fi;
+        
+        FIND_EXISTING_MEETS_OF_FINITE_POSET( P );
+        
+        FIND_EXISTING_JOINS_OF_FINITE_POSET( P );
+        
+    fi;
+    
+    if HasIsMeetSemiLattice( P ) and IsMeetSemiLattice( P ) then
+        
+        AddDirectProduct( P,
+          function( Poset, l )
+            local existing_meets;
+            
+            existing_meets := ExistingMeets( Poset );
+            
+            return Iterated( l, { A, B } -> LookupDictionary( existing_meets, [ A, B ] ) );
+            
+        end );
+        
+        AddProjectionInFactorOfDirectProductWithGivenDirectProduct( P,
+          function( Poset, D, k, P )
+            
+            return UniqueMorphism( Poset, P, D[k] );
+            
+        end );
+        
+        AddUniversalMorphismIntoDirectProductWithGivenDirectProduct( P,
+          function( Poset, D, T, tau, P )
+            
+            return UniqueMorphism( Poset, T, P);
+            
+        end );
+        
+        AddInitialObject( P,
+          function( Poset )
+              
+            return BottomElement( Poset );
+                
+          end );
+
+    fi;
+        
+    if HasIsJoinSemiLattice( P ) and IsJoinSemiLattice( P ) then
+        
+        AddCoproduct( P,
+          function( Poset, l )
+            local existing_joins;
+            
+            existing_joins := ExistingJoins( Poset );
+            
+            return Iterated( l, { A, B } -> LookupDictionary( existing_joins, [ A, B ] ) );
+            
+        end );
+        
+        AddInjectionOfCofactorOfCoproductWithGivenCoproduct( P,
+          function( Poset, D, k, I )
+            
+            return UniqueMorphism( Poset, D[k], I);
+            
+        end );
+        
+        AddUniversalMorphismFromCoproductWithGivenCoproduct( P,
+          function( Poset, D, T, tau, I )
+            
+            return UniqueMorphism( Poset, I, T );
+            
+        end );
+        
+        AddTerminalObject( P,
+          function( Poset )
+            
+            return TopElement( Poset );
+            
+        end );
+        
+    fi;
+    
+    if CAP_INTERNAL_RETURN_OPTION_OR_DEFAULT( "check_distributivity", false ) then
+    
+        if ( HasIsMeetSemiLattice( P ) and IsMeetSemiLattice( P ) ) and
+           ( HasIsJoinSemiLattice( P ) and IsJoinSemiLattice( P ) ) then
+            
+            SetIsLattice( P, true );
+            
+            CHECK_IF_LATTICE_IS_DISTRIBUTIVE( P );
             
         fi;
         
@@ -563,6 +691,253 @@ InstallMethod( CreateProsetOrPosetOfCategory,
     Finalize( P );
     
     return P;
+    
+end );
+
+##
+InstallMethod( FIND_EXISTING_MEETS_OF_FINITE_POSET,
+        "for a finite poset",
+        [ IsPosetCategory and IsFiniteCategory ],
+        
+  function( P )
+    local objects, obj, obj1, obj2, subset, possible_meets, confirmed_meets, meet, P_has_all_meets, P_has_a_top;
+    
+    objects := SetOfObjectsOfCategory( P );
+    
+    possible_meets := [];
+    confirmed_meets := NewDictionary( IsList, true );
+    
+    P_has_all_meets := true;
+    
+    for subset in Arrangements( objects ) do
+        
+        if Length( subset ) < 2 then continue; fi;
+        
+        # Find all elements below subset; these are the possible meets.
+        for obj in objects do
+            
+            if ForAll( subset, s -> IsHomSetInhabited( P, obj, s ) ) then
+                
+                Add( possible_meets, obj );
+                
+            fi;
+            
+        od;
+        
+        if possible_meets = [] then
+            # No candidates for a meet were found
+            
+            P_has_all_meets := false;
+            
+            continue;
+            
+        fi;
+        
+        # Find the greatest element among all possible meets
+        for meet in possible_meets do
+            
+            if ForAll( possible_meets, m -> IsHomSetInhabited( P, m, meet ) ) then
+                
+                if LookupDictionary( confirmed_meets, subset ) = fail then
+                    
+                    AddDictionary( confirmed_meets, subset, meet );
+                    
+                fi;
+                
+                break;
+                
+            fi;
+            
+        od;
+        
+        if LookupDictionary( confirmed_meets, subset ) = fail then
+            # No greatest meet was found
+            
+            P_has_all_meets := false;
+            
+        fi;
+        
+        possible_meets := [];
+        
+    od;
+    
+    # Add the meets: A x A = A
+    for obj in objects do
+        
+        AddDictionary( confirmed_meets, [ obj, obj ], obj );
+        
+    od;
+    
+    SetExistingMeets( P, confirmed_meets );
+    
+    # Find the top element (= empty meet)
+    
+    P_has_a_top := false;
+    
+    for obj1 in objects do
+        
+        if ForAll( objects, obj2 -> IsHomSetInhabited( P, obj2, obj1 ) ) then
+            
+            SetTopElement( P, obj1 );
+            
+            P_has_a_top := true;
+            
+            break;
+            
+        fi;
+        
+    od;
+    
+    if P_has_all_meets and P_has_a_top then
+        
+        SetIsMeetSemiLattice( P, true );
+        
+    fi;
+end );
+
+##
+InstallMethod( FIND_EXISTING_JOINS_OF_FINITE_POSET,
+        "for a finite poset",
+        [ IsPosetCategory and IsFiniteCategory ],
+        
+  function( P )
+    local objects, obj, obj1, obj2, subset, possible_joins, confirmed_joins, join, P_has_all_joins, P_has_a_bottom ;
+    
+    objects := SetOfObjectsOfCategory( P );
+    
+    possible_joins := [];
+    confirmed_joins := NewDictionary( IsList, true );
+    
+    P_has_all_joins := true;
+    
+    for subset in Arrangements( objects ) do
+        
+        if Length( subset ) < 2 then continue; fi;
+        
+        # Find all elements above subset; these are the possible joins.
+        for obj in objects do
+            
+            if ForAll( subset, s -> IsHomSetInhabited( P, s, obj ) ) then
+                
+                Add( possible_joins, obj );
+                
+            fi;
+            
+        od;
+        
+        if possible_joins = [] then
+          # No candidates for a join were found
+          
+          P_has_all_joins := false;
+          
+          continue;
+          
+        fi;
+        
+        # Find the smallest element among all possible joins
+        for join in possible_joins do
+            
+            if ForAll( possible_joins, m -> IsHomSetInhabited( P, join, m ) ) then
+                
+                if LookupDictionary( confirmed_joins, subset ) = fail then
+                    
+                    AddDictionary( confirmed_joins, subset, join );
+                    # if Length( subset ) = 3 then Display(subset); Error(); fi;
+                    
+                fi;
+                
+                break;
+                
+            fi;
+            
+        od;
+        
+        if LookupDictionary( confirmed_joins, subset ) = fail then
+          # No smallest join was found
+          
+          P_has_all_joins := false;
+          
+        fi;
+        
+        possible_joins := [];
+        
+    od;
+    
+    # Add the joins: A + A = A
+    for obj in objects do
+        
+        AddDictionary( confirmed_joins, [ obj, obj ], obj );
+        
+    od;
+    
+    SetExistingJoins( P, confirmed_joins );
+    
+    # Find the bottom element (= empty join)
+    
+    P_has_a_bottom := false;
+    
+    for obj1 in objects do
+        
+        if ForAll( objects, obj2 -> IsHomSetInhabited( P, obj2, obj1 ) ) then
+            
+            SetBottomElement( P, obj2 );
+            
+            P_has_a_bottom := true;
+            
+            break;
+            
+        fi;
+        
+    od;
+    
+    if P_has_all_joins and P_has_a_bottom then
+        
+        SetIsJoinSemiLattice( P, true );
+        
+    fi;
+    
+end );
+
+##
+InstallMethod( CHECK_IF_LATTICE_IS_DISTRIBUTIVE,
+        "for a finite poset",
+        [ IsPosetCategory and IsFiniteCategory ],
+        
+  function( P )
+    local is_distributive, subset, meets, joins, lhs, rhs;
+    
+    meets := ExistingMeets( P );
+    joins := ExistingJoins( P );
+    
+    is_distributive := true;
+        
+    for subset in Tuples( SetOfObjectsOfCategory( P ), 3 ) do
+        
+        # lhs := a ∧ (b ∨ c)
+        lhs := LookupDictionary( meets, [ subset[1], LookupDictionary( joins, [ subset[2], subset[3] ] ) ] );
+        
+        # rhs := (a ∧ b) ∨ (a ∧ c)
+        rhs := LookupDictionary( joins, [ LookupDictionary( meets, [ subset[1], subset[2] ] ),
+                                                    LookupDictionary( meets, [ subset[1], subset[3] ] ) ] );
+        
+        if not IsEqualForObjects( P, lhs, rhs ) then
+            
+            is_distributive := false;
+            
+            # Display( "Not a distributive lattice because of i.e.: ");
+            # Display( subset );
+            
+            break;
+            
+        fi;
+        
+    od;
+    
+    if is_distributive then
+        
+        SetIsDistributiveLattice( P, true );
+        
+    fi;
     
 end );
 

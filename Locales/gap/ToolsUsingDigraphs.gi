@@ -208,7 +208,7 @@ InstallMethod( DigraphOfPoset,
         [ IsThinCategory and IsFiniteCategory ],
         
   function( P )
-    local objects, offset, D;
+    local objects, obj, offset, D;
     
     objects := SetOfObjectsOfCategory( P );
     
@@ -219,6 +219,17 @@ InstallMethod( DigraphOfPoset,
     else
         D := Digraph( [ offset .. offset + Length( objects ) - 1 ], { i, j } -> IsHomSetInhabited( objects[1-offset+i], objects[1-offset+j] ) );
     fi;
+    
+    for obj in objects do
+        
+        if HasUnderlyingCell( obj ) and IsPathCategoryObject( UnderlyingCell( obj ) ) then
+            
+            SetDigraphVertexLabel( D, ObjectIndex( UnderlyingCell( obj ) ),
+                                   ReplacedStringViaRecord( ObjectLabel( UnderlyingCell( obj ) ), rec( p := "'", v := "∨", w := "∧" ) ) ) ;
+            
+        fi;
+        
+    od;
     
     D := DigraphReflexiveTransitiveReduction( D );
     
