@@ -195,5 +195,5 @@ DeclareOperation( "FIND_EXISTING_MEETS_OF_FINITE_POSET",
         [ IsPosetCategory and IsFiniteCategory ] );
 
 DeclareOperation( "CHECK_IF_LATTICE_IS_DISTRIBUTIVE",
-        [ IsPosetCategory and IsFiniteCategory ] );
+        [ IsLattice and IsFiniteCategory ] );
  

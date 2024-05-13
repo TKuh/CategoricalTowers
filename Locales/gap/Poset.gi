@@ -59,18 +59,19 @@ InstallMethod( RelativeMeet,
         "for a finite poset",
         [ IsPosetCategory and IsFiniteCategory, IsList, IsList ],
         
-  function( P, l, excluded_meets )
-    local existing_meets;
+  function( P, meet, excluded_meets )
+    local contains;
     
-    if l in excluded_meets then
+    contains := { list_of_meets, meet } -> ForAny( list_of_meets,
+                                                   meet2 -> ForAll( meet2, m -> m in meet ) and ForAll( meet, m -> m in meet2 ) ); # meet2 ⊂ meet and meet ⊂ meet2
+    
+    if contains( excluded_meets, meet ) then
         
         return fail;
         
     fi;
     
-    existing_meets := ExistingMeets( P );
-    
-    return LookupDictionary( existing_meets, l );
+    return DirectProduct( P, meet );
     
 end );
 
@@ -78,18 +79,19 @@ InstallMethod( RelativeJoin,
         "for a finite poset",
         [ IsPosetCategory and IsFiniteCategory, IsList, IsList ],
         
-  function( P, l, excluded_joins )
-    local existing_joins;
+  function( P, join, excluded_joins )
+    local contains;
     
-    if l in excluded_joins then
+    contains := { list_of_joins, join } -> ForAny( list_of_joins,
+                                                   join2 -> ForAll( join2, j -> j in join ) and ForAll( join, j -> j in join2 ) ); # join2 ⊂ join and join ⊂ join2
+    
+    if contains( excluded_joins, join ) then
         
         return fail;
         
     fi;
     
-    existing_joins := ExistingJoins( P );
-    
-    return LookupDictionary( existing_joins, l );
+    return Coproduct( P, join );
     
 end );
 
@@ -200,7 +202,7 @@ InstallMethod( RelativeFiltersOfPoset,
     
     upsets := UpSets( P );
     
-    filters := Filtered( upsets, up -> ForAll( Combinations( up, 2 ), c -> RelativeMeet( P, c, excluded_meets ) = fail or RelativeMeet( P, c, excluded_meets ) in up ) );
+    filters := Filtered( upsets, up -> ForAll( Combinations( up ), c -> RelativeMeet( P, c, excluded_meets ) = fail or RelativeMeet( P, c, excluded_meets ) in up ) );
     
     return filters;
     
@@ -215,7 +217,7 @@ InstallMethod( RelativeIdealsOfPoset,
     
     downsets := DownSets( P );
     
-    filters := Filtered( downsets, down -> ForAll( Combinations( down, 2 ), c -> RelativeJoin( P, c, excluded_joins ) = fail or RelativeJoin( P, c, excluded_joins ) in down ) );
+    filters := Filtered( downsets, down -> ForAll( Combinations( down ), c -> RelativeJoin( P, c, excluded_joins ) = fail or RelativeJoin( P, c, excluded_joins ) in down ) );
     
     return filters;
     

@@ -517,13 +517,14 @@ InstallMethod( CreateProsetOrPosetOfCategory,
             
         end );
         
-        AddInitialObject( P,
+        # The empty meet
+        AddTerminalObject( P,
           function( Poset )
-              
-            return BottomElement( Poset );
-                
-          end );
-
+            
+            return TopElement( Poset );
+            
+        end );
+        
     fi;
         
     if HasIsJoinSemiLattice( P ) and IsJoinSemiLattice( P ) then
@@ -552,10 +553,11 @@ InstallMethod( CreateProsetOrPosetOfCategory,
             
         end );
         
-        AddTerminalObject( P,
+        # The empty join
+        AddInitialObject( P,
           function( Poset )
             
-            return TopElement( Poset );
+            return BottomElement( Poset );
             
         end );
         
@@ -709,9 +711,7 @@ InstallMethod( FIND_EXISTING_MEETS_OF_FINITE_POSET,
     
     P_has_all_meets := true;
     
-    for subset in Arrangements( objects ) do
-        
-        if Length( subset ) < 2 then continue; fi;
+    for subset in IteratorOfCombinations( objects, 2 ) do
         
         # Find all elements below subset; these are the possible meets.
         for obj in objects do
@@ -738,11 +738,8 @@ InstallMethod( FIND_EXISTING_MEETS_OF_FINITE_POSET,
             
             if ForAll( possible_meets, m -> IsHomSetInhabited( P, m, meet ) ) then
                 
-                if LookupDictionary( confirmed_meets, subset ) = fail then
-                    
-                    AddDictionary( confirmed_meets, subset, meet );
-                    
-                fi;
+                AddDictionary( confirmed_meets, [ subset[1], subset[2] ], meet );
+                AddDictionary( confirmed_meets, [ subset[2], subset[1] ], meet );
                 
                 break;
                 
@@ -810,9 +807,7 @@ InstallMethod( FIND_EXISTING_JOINS_OF_FINITE_POSET,
     
     P_has_all_joins := true;
     
-    for subset in Arrangements( objects ) do
-        
-        if Length( subset ) < 2 then continue; fi;
+    for subset in IteratorOfCombinations( objects, 2 ) do
         
         # Find all elements above subset; these are the possible joins.
         for obj in objects do
@@ -839,12 +834,8 @@ InstallMethod( FIND_EXISTING_JOINS_OF_FINITE_POSET,
             
             if ForAll( possible_joins, m -> IsHomSetInhabited( P, join, m ) ) then
                 
-                if LookupDictionary( confirmed_joins, subset ) = fail then
-                    
-                    AddDictionary( confirmed_joins, subset, join );
-                    # if Length( subset ) = 3 then Display(subset); Error(); fi;
-                    
-                fi;
+                AddDictionary( confirmed_joins, [ subset[1], subset[2] ], join );
+                AddDictionary( confirmed_joins, [ subset[2], subset[1] ], join );
                 
                 break;
                 
@@ -878,9 +869,9 @@ InstallMethod( FIND_EXISTING_JOINS_OF_FINITE_POSET,
     
     for obj1 in objects do
         
-        if ForAll( objects, obj2 -> IsHomSetInhabited( P, obj2, obj1 ) ) then
+        if ForAll( objects, obj2 -> IsHomSetInhabited( P, obj1, obj2 ) ) then
             
-            SetBottomElement( P, obj2 );
+            SetBottomElement( P, obj1 );
             
             P_has_a_bottom := true;
             
@@ -900,25 +891,21 @@ end );
 
 ##
 InstallMethod( CHECK_IF_LATTICE_IS_DISTRIBUTIVE,
-        "for a finite poset",
-        [ IsPosetCategory and IsFiniteCategory ],
+        "for a finite lattice",
+        [ IsLattice and IsFiniteCategory ],
         
   function( P )
-    local is_distributive, subset, meets, joins, lhs, rhs;
-    
-    meets := ExistingMeets( P );
-    joins := ExistingJoins( P );
+    local is_distributive, subset, lhs, rhs;
     
     is_distributive := true;
         
-    for subset in Tuples( SetOfObjectsOfCategory( P ), 3 ) do
+    for subset in Arrangements( SetOfObjectsOfCategory( P ), 3 ) do
         
         # lhs := a ∧ (b ∨ c)
-        lhs := LookupDictionary( meets, [ subset[1], LookupDictionary( joins, [ subset[2], subset[3] ] ) ] );
+        lhs := DirectProduct( P, [ subset[1], Coproduct( P, [ subset[2], subset[3] ] ) ] );
         
         # rhs := (a ∧ b) ∨ (a ∧ c)
-        rhs := LookupDictionary( joins, [ LookupDictionary( meets, [ subset[1], subset[2] ] ),
-                                                    LookupDictionary( meets, [ subset[1], subset[3] ] ) ] );
+        rhs := Coproduct( P, [ DirectProduct( P, [ subset[1], subset[2] ] ), DirectProduct( P, [ subset[1], subset[3] ] ) ] );
         
         if not IsEqualForObjects( P, lhs, rhs ) then
             
