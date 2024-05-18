@@ -124,10 +124,10 @@ DeclareOperation( "IsEqualForObjectsIfIsHomSetInhabited",
 # @Section Tools
 
 DeclareOperation( "RelativeMeet",
-        [ IsPosetCategory and IsFiniteCategory, IsList, IsList ] );
+        [ IsPosetCategory and IsFiniteCategory, IsList, IsDictionary ] );
 
 DeclareOperation( "RelativeJoin",
-        [ IsPosetCategory and IsFiniteCategory, IsList, IsList ] );
+        [ IsPosetCategory and IsFiniteCategory, IsList, IsDictionary ] );
 
 DeclareOperation( "UpSets",
         [ IsPosetCategory and IsFiniteCategory ] );
@@ -142,12 +142,12 @@ DeclareOperation( "DownSets",
         [ IsPosetCategory and IsFiniteCategory ] );
 
 DeclareOperation( "RelativeFiltersOfPoset",
-        [ IsPosetCategory and IsFiniteCategory, IsList ] );
+        [ IsPosetCategory and IsFiniteCategory, IsDictionary ] );
 
 DeclareOperation( "RelativeIdealsOfPoset",
-        [ IsPosetCategory and IsFiniteCategory, IsList ] );
+        [ IsPosetCategory and IsFiniteCategory, IsDictionary ] );
 
 DeclareOperation( "RelativePrimeFiltersOfPoset",
-        [ IsPosetCategory and IsFiniteCategory, IsList, IsList ] );
+        [ IsPosetCategory and IsFiniteCategory, IsDictionary, IsDictionary ] );
 
 DeclareGlobalVariable( "POSET_METHOD_NAME_RECORD" );

@@ -57,17 +57,23 @@ end );
 
 InstallMethod( RelativeMeet,
         "for a finite poset",
-        [ IsPosetCategory and IsFiniteCategory, IsList, IsList ],
+        [ IsPosetCategory and IsFiniteCategory, IsList, IsDictionary ],
         
   function( P, meet, excluded_meets )
     local contains, existing_meets;
     
     if Length( meet ) < 2 then return fail; fi;
     
-    contains := { list_of_meets, meet } -> ForAny( list_of_meets,
-                                                   meet2 -> ForAll( meet2, m -> m in meet ) and ForAll( meet, m -> m in meet2 ) ); # meet2 ⊂ meet and meet ⊂ meet2
+    # contains := { list_of_meets, meet } -> ForAny( list_of_meets,
+    #                                                meet2 -> ForAll( meet2, m -> m in meet ) and ForAll( meet, m -> m in meet2 ) ); # meet2 ⊂ meet and meet ⊂ meet2
     
-    if contains( excluded_meets, meet ) then
+    # if contains( excluded_meets, meet ) then
+        
+    #     return fail;
+        
+    # fi;
+    
+    if KnowsDictionary( excluded_meets, meet ) = true then
         
         return fail;
         
@@ -75,7 +81,9 @@ InstallMethod( RelativeMeet,
     
     existing_meets := ExistingMeets( P );
     
-    return Iterated( meet, { A, B } -> LookupDictionary( existing_meets, [ A, B ] ) );
+    return LookupDictionary( existing_meets, meet );
+    
+    # return Iterated( meet, { A, B } -> LookupDictionary( existing_meets, [ A, B ] ) );
     
     # return DirectProduct( P, meet ); # The poset is not neccesarily a meet-semilattice and DirectProduct might not be installed
     
@@ -83,17 +91,23 @@ end );
 
 InstallMethod( RelativeJoin,
         "for a finite poset",
-        [ IsPosetCategory and IsFiniteCategory, IsList, IsList ],
+        [ IsPosetCategory and IsFiniteCategory, IsList, IsDictionary ],
         
   function( P, join, excluded_joins )
     local contains, existing_joins;
     
     if Length( join ) < 2 then return fail; fi;
     
-    contains := { list_of_joins, join } -> ForAny( list_of_joins,
-                                                   join2 -> ForAll( join2, j -> j in join ) and ForAll( join, j -> j in join2 ) ); # join2 ⊂ join and join ⊂ join2
+    # contains := { list_of_joins, join } -> ForAny( list_of_joins,
+    #                                                join2 -> ForAll( join2, j -> j in join ) and ForAll( join, j -> j in join2 ) ); # join2 ⊂ join and join ⊂ join2
     
-    if contains( excluded_joins, join ) then
+    # if contains( excluded_joins, join ) then
+        
+    #     return fail;
+        
+    # fi;
+    
+    if KnowsDictionary( excluded_joins, join ) = true then
         
         return fail;
         
@@ -101,7 +115,9 @@ InstallMethod( RelativeJoin,
     
     existing_joins := ExistingJoins( P );
     
-    return Iterated( join, { A, B } -> LookupDictionary( existing_joins, [ A, B ] ) );
+    return LookupDictionary( existing_joins, join );
+    
+    # return Iterated( join, { A, B } -> LookupDictionary( existing_joins, [ A, B ] ) );
     
     # return Coproduct( P, join ); # The poset is not neccesarily a join-semilattice and DirectProduct might not be installed
     
@@ -165,7 +181,7 @@ InstallOtherMethod( UpSetsAsDistributiveExtension,
 end );
 
 InstallMethod( EmbeddingInDistributiveExtension,
-        "for a finite list, an element and a comparison function",
+        "for a finite list and an element ",
         [ IsList, IsObject ],
         
   function( filters, object )
@@ -207,7 +223,7 @@ end );
 
 InstallMethod( RelativeFiltersOfPoset,
         "for a finite poset",
-        [ IsPosetCategory and IsFiniteCategory, IsList ],
+        [ IsPosetCategory and IsFiniteCategory, IsDictionary ],
         
   function( P, excluded_meets )
     local upsets, filters;
@@ -224,7 +240,7 @@ end );
 
 InstallMethod( RelativeIdealsOfPoset,
         "for a finite poset",
-        [ IsPosetCategory and IsFiniteCategory, IsList ],
+        [ IsPosetCategory and IsFiniteCategory, IsDictionary ],
         
   function( P, excluded_joins )
     local downsets, filters;
@@ -241,7 +257,7 @@ end );
 
 InstallMethod( RelativePrimeFiltersOfPoset,
         "for a finite poset",
-        [ IsPosetCategory and IsFiniteCategory, IsList, IsList ],
+        [ IsPosetCategory and IsFiniteCategory, IsDictionary, IsDictionary ],
         
   function( P, excluded_meets, excluded_joins )
     local poset, relative_filters, relative_ideals, complement, contains, relative_primes_filters;

@@ -711,7 +711,7 @@ InstallMethod( FIND_EXISTING_MEETS_OF_FINITE_POSET,
     
     P_has_all_meets := true;
     
-    for subset in IteratorOfCombinations( objects, 2 ) do
+    for subset in IteratorOfCombinations( objects ) do
         
         # Find all elements below subset; these are the possible meets.
         for obj in objects do
@@ -738,8 +738,11 @@ InstallMethod( FIND_EXISTING_MEETS_OF_FINITE_POSET,
             
             if ForAll( possible_meets, m -> IsHomSetInhabited( P, m, meet ) ) then
                 
-                AddDictionary( confirmed_meets, [ subset[1], subset[2] ], meet );
-                AddDictionary( confirmed_meets, [ subset[2], subset[1] ], meet );
+                for obj in Arrangements( subset, Length( subset ) ) do
+                    
+                    AddDictionary( confirmed_meets, obj, meet );
+                    
+                od;
                 
                 break;
                 
@@ -759,11 +762,11 @@ InstallMethod( FIND_EXISTING_MEETS_OF_FINITE_POSET,
     od;
     
     # Add the meets: A x A = A
-    for obj in objects do
+    # for obj in objects do
         
-        AddDictionary( confirmed_meets, [ obj, obj ], obj );
+    #     AddDictionary( confirmed_meets, [ obj, obj ], obj );
         
-    od;
+    # od;
     
     SetExistingMeets( P, confirmed_meets );
     
@@ -807,7 +810,7 @@ InstallMethod( FIND_EXISTING_JOINS_OF_FINITE_POSET,
     
     P_has_all_joins := true;
     
-    for subset in IteratorOfCombinations( objects, 2 ) do
+    for subset in IteratorOfCombinations( objects ) do
         
         # Find all elements above subset; these are the possible joins.
         for obj in objects do
@@ -834,8 +837,11 @@ InstallMethod( FIND_EXISTING_JOINS_OF_FINITE_POSET,
             
             if ForAll( possible_joins, m -> IsHomSetInhabited( P, join, m ) ) then
                 
-                AddDictionary( confirmed_joins, [ subset[1], subset[2] ], join );
-                AddDictionary( confirmed_joins, [ subset[2], subset[1] ], join );
+                for obj in Arrangements( subset, Length( subset ) ) do
+                    
+                    AddDictionary( confirmed_joins, obj, join );
+                    
+                od;
                 
                 break;
                 
@@ -855,11 +861,11 @@ InstallMethod( FIND_EXISTING_JOINS_OF_FINITE_POSET,
     od;
     
     # Add the joins: A + A = A
-    for obj in objects do
+    # for obj in objects do
         
-        AddDictionary( confirmed_joins, [ obj, obj ], obj );
+    #     AddDictionary( confirmed_joins, [ obj, obj ], obj );
         
-    od;
+    # od;
     
     SetExistingJoins( P, confirmed_joins );
     
