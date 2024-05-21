@@ -144,7 +144,11 @@ for vertex in vertices do
 od;
 
 digraph := DotVertexLabelledDigraph( digraph );
+digraph := ReplacedStringViaRecord( digraph, rec( node := "rankdir = \"BT\"\nnode" ) );
+
 Splash( digraph );
+
+# Distributive extension
 
 StartTimer( "Time" );
 distributive_extension := UpSetsAsDistributiveExtension( relative_prime_filters );;
@@ -377,16 +381,17 @@ relative_prime_filters :=
 
 # Proof that m <= s ∨ m''
 
-up_m := EmbeddingInDistributiveExtension( relative_prime_filters, P.m );
-up_s := EmbeddingInDistributiveExtension( relative_prime_filters, P.s );
-up_mpp := EmbeddingInDistributiveExtension( relative_prime_filters, P.mpp );
-up_s_v_up_mpp := DuplicateFreeList( Concatenation( up_s, up_mpp ) );
+up_m := EmbeddingInDistributiveExtension( relative_prime_filters, P.m ); # ↑{ { m, s, s∨m' } }
+up_s := EmbeddingInDistributiveExtension( relative_prime_filters, P.s ); # ↑{ { s } }
+up_mpp := EmbeddingInDistributiveExtension( relative_prime_filters, P.mpp ); # ↑{ ... }
+up_s_v_up_mpp := DuplicateFreeList( Concatenation( up_s, up_mpp ) ); # ↑{ ... }
 check_if_subset( up_m, up_s_v_up_mpp );
 
 # Proof that s'' ∧ m <= s
 
 intersect := function( upset1, upset2 ) return Filtered( upset1, element -> element in upset2 ); end;
 
-up_spp := EmbeddingInDistributiveExtension( relative_prime_filters, P.spp );
-up_spp_w_up_m := intersect( up_spp, up_m );
-check_if_subset( up_spp_w_up_m, up.s );
+up_spp := EmbeddingInDistributiveExtension( relative_prime_filters, P.spp ); # ↑{ { s'' } }
+up_spp_w_up_m := intersect( up_spp, up_m ); # ↑{ { m, s, s∨m', s'' } }
+check_if_subset( up_spp_w_up_m, up.s ); # ↑{ { m, s, s∨m', s'' } } ⊂ ↑{ { s } }
+
