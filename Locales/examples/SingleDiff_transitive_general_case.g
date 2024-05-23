@@ -178,9 +178,26 @@ for vertex in vertices do
   
 od;
 
+find_position := function( dist_extension, upset )
+    local i;
+    
+    for i in [1 .. Length( dist_extension ) ] do
+        
+        if check_if_subset( dist_extension[i], upset ) and check_if_subset( upset, dist_extension[i] ) then
+            
+            return i;
+            
+        fi;
+        
+    od;
+    
+    return fail;
+    
+end;
+
 for obj in SetOfObjects( P ) do
   
-  position := Position( distributive_extension, EmbeddingInDistributiveExtension( relative_prime_filters, obj ) );
+  position := find_position( distributive_extension, EmbeddingInDistributiveExtension( relative_prime_filters, obj ) );
   
   SetDigraphVertexLabel( digraph, position,
                          ReplacedStringViaRecord( ObjectLabel( UnderlyingCell( obj ) ), rec( p := "'", v := "∨", w := "∧" ) ) ) ;
@@ -188,6 +205,7 @@ for obj in SetOfObjects( P ) do
 od;
 
 digraph := DotVertexLabelledDigraph( digraph );
+digraph := ReplacedStringViaRecord( digraph, rec( node := "rankdir = \"BT\"\nnode" ) );
 
 Splash( digraph );
 
@@ -289,7 +307,7 @@ relative_prime_filters :=
       P.spwm, P.s, 
       P.sp, P.svmp, 
       P.sppwmp, P.spp, 
-      P.spvmpp ] ];
+      P.spvmpp ] ];;
 
 # Display( relative_prime_filters );
 # [ [ An object in the poset given by: (spp) ], 
