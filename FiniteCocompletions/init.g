@@ -35,6 +35,9 @@ ReadPackage( "FiniteCocompletions", "gap/AdditiveClosure.gd");
 ReadPackage( "FiniteCocompletions", "gap/AdditiveClosureOfObjectFiniteCategory.gd");
 
 ##
+ReadPackage( "FiniteCocompletions", "gap/DisconnectedAdditiveClosure.gd");
+
+##
 ReadPackage( "FiniteCocompletions", "gap/FreydCategory.gd");
 
 ##
