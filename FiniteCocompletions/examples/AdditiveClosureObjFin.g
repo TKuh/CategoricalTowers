@@ -24,6 +24,12 @@ matrix := [ [ zero_ab, zero_ac ], [ zero_ab, zero_ac ], [ id_b, zero_bc] ];;
 m := MorphismConstructor( A, source, matrix, target );;
 IsWellDefinedForMorphisms( m );
 #! true
+matrix := [ [ id_b, zero_bc ], [ zero_ab, zero_ac ], [ zero_ab, zero_ac ] ];;
+m = matrix / A;
+#! true
+id_b_A := id_b / A;;
+gap> IsWellDefinedForMorphisms( id_b_A );
+#! true
 #! @EndExample
 #! @EndChunk
 

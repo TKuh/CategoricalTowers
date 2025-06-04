@@ -186,6 +186,7 @@ end );
 #!  Return the category $A$ underlying the additive closure
 #!  <A>AC</A><C> := AdditiveClosureOfObjectFiniteCategory(</C> $A$ <C>)</C>.
 #! @Arguments AC
+#! @Return a &CAP; category
 DeclareAttribute( "UnderlyingCategory",
         IsAdditiveClosureOfObjectFiniteCategory );
 
@@ -200,6 +201,7 @@ end );
 #!  Return the number of objects in the category $A$ underlying the additive closure
 #!  <A>AC</A><C> := AdditiveClosureOfObjectFiniteCategory(</C> $A$ <C>)</C>.
 #! @Arguments AC
+#! @Returns An integer
 DeclareAttribute( "NumberOfObjectsOfUnderlyingCategory",
         IsAdditiveClosureOfObjectFiniteCategory );
 
@@ -209,3 +211,42 @@ CapJitAddTypeSignature( "NumberOfObjectsOfUnderlyingCategory", [ IsAdditiveClosu
     return IsBigInt;
     
 end );
+
+####################################
+##
+#! @Section Operators
+##
+####################################
+
+#! @Description
+#! The arguments are a morphism $\alpha \colon A \to B$ between formal direct sums in
+#! an additive closure $C^\oplus$ and two integers $i,j$.
+#! The output is the $(i,j)$'th entry in <C>MorphismMatrix</C>($\alpha$).
+#! @Arguments alpha, i, j
+#! @Returns a &CAP; category morphism in $C$
+DeclareOperation( "[,]",
+                  [ IsMorphismInAdditiveClosureOfObjectFiniteCategory, IsInt, IsInt ] );
+
+CapJitAddTypeSignature( "[,]", [ IsMorphismInAdditiveClosureOfObjectFiniteCategory, IsInt, IsInt ], function ( input_types )
+    
+    Assert( 0, IsAdditiveClosureOfObjectFiniteCategory( input_types[1].category ) );
+    
+    return CapJitDataTypeOfMorphismOfCategory( UnderlyingCategory( input_types[1].category ) );
+    
+end );
+
+#! @Description
+#! The input is either
+#! * a list of objects or
+#! * a list of lists of morphisms
+#! in the underlying category.
+#! This operation then constructs either an object or a morphism in <C>AdditiveClosureOfObjectFiniteCategory</C>.
+DeclareOperation( "/",
+                  [ IsList, IsAdditiveClosureOfObjectFiniteCategory ] );
+
+#! @Description
+#! This is a convenience method for
+#! <C>ObjectConstructor</C> and <C>MorphismConstructor</C>.
+DeclareOperation( "/",
+                  [ IsCapCategoryCell, IsAdditiveClosureOfObjectFiniteCategory ] );
+

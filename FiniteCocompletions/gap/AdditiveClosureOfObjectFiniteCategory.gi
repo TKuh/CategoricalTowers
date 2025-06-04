@@ -268,3 +268,217 @@ InstallMethod( ADDITIVE_CLOSURE_Of_OBJECT_FINITE_CATEGORY,
     return AC_objfin;
     
 end ) );
+
+####################################
+##
+## Operations
+##
+####################################
+
+##
+InstallOtherMethod( \/,
+               [ IsList, IsAdditiveClosureOfObjectFiniteCategory ],
+               
+  function( listlist, AC_objfin )
+    local AC, C, obj_ac,  source_ac, source, target_ac, target, mor;
+    
+    AC := ModelingCategory( AC_objfin );
+    C := UnderlyingCategory( AC_objfin );
+    
+    if ForAll( listlist, obj -> IsCapCategoryObject( obj ) and
+                                IsIdenticalObj( CapCategory( obj ), C ) ) then
+        
+        # It's a list of objets in the underlying category
+
+        obj_ac := AdditiveClosureObject( AC, listlist );
+        
+        Assert( 0, IsWellDefinedForObjects( AC, obj_ac ) );
+        
+        return ReinterpretationOfObject( AC_objfin, obj_ac );
+        
+    else
+        
+        # Assume its a matrix of morphisms in C
+        
+        source_ac := AdditiveClosureObject( AC, List( listlist, row -> Source( row[1] ) ) );
+        source := ReinterpretationOfObject( AC_objfin, source_ac );
+        
+        target_ac := AdditiveClosureObject( AC, List( listlist[1], col -> Target( col ) ) );
+        target := ReinterpretationOfObject( AC_objfin, target_ac );
+        
+        mor := AdditiveClosureMorphism( AC, source_ac, listlist, target_ac );
+        
+        return ReinterpretationOfMorphism( AC_objfin, source, mor, target );
+        
+    fi;
+    
+end );
+
+##
+ObjectToMultiplicityList :=
+  function( obj, set_of_objects )
+    
+    local pos, positions;
+    
+    pos := Position( set_of_objects, obj );
+    
+    positions := ListWithIdenticalEntries( Length( set_of_objects ), 0 );
+    
+    positions[pos] := 1;
+    
+    return positions;
+    
+end;
+
+##
+InstallOtherMethod( \/,
+               [ IsCapCategoryObject, IsAdditiveClosureOfObjectFiniteCategory ],
+               
+  function( obj, AC_objfin )
+    local set_of_objects, pos, positions;
+    
+    Assert( 0, IsIdenticalObj( UnderlyingCategory( AC_objfin ), CapCategory( obj ) ) );
+    
+    set_of_objects := SetOfObjectsOfCategory( UnderlyingCategory( AC_objfin ) );
+    
+    positions := ObjectToMultiplicityList( obj, set_of_objects );
+    
+    return ObjectConstructor( AC_objfin, [ 1, positions ] );
+    
+end );
+
+##
+InstallOtherMethod( \/,
+               [ IsCapCategoryMorphism, IsAdditiveClosureOfObjectFiniteCategory ],
+               
+  function( alpha, AC_objfin )
+    local set_of_objects, source, target;
+    
+    Assert( 0, IsIdenticalObj( UnderlyingCategory( AC_objfin ), CapCategory( alpha ) ) );
+    
+    set_of_objects := SetOfObjectsOfCategory( UnderlyingCategory( AC_objfin ) );
+    
+    source := ObjectConstructor( AC_objfin, [ 1, ObjectToMultiplicityList( Source( alpha ), set_of_objects ) ] );
+    target := ObjectConstructor( AC_objfin, [ 1, ObjectToMultiplicityList( Target( alpha ), set_of_objects ) ] );
+    
+    return MorphismConstructor( AC_objfin, source, [ [ alpha ] ], target );
+    
+end );
+
+##
+InstallMethodForCompilerForCAP( \[\,\],
+               [ IsMorphismInAdditiveClosureOfObjectFiniteCategory, IsInt, IsInt ],
+               
+  function( morphism, i, j )
+    
+    if not ( i < ChecksumAndMultiplicities( Source( morphism ) )[1] and
+             j < ChecksumAndMultiplicities( Target( morphism ) )[1] ) then
+        
+        Error( "out of bounds index [", String(i), ",", String(j),
+               "] for the morphism matrix.\n" );
+        
+    fi;
+    
+    return MorphismMatrix( morphism )[i][j];
+    
+end );
+
+####################################
+##
+## View
+##
+####################################
+
+##
+InstallMethod( ViewString,
+               [ IsObjectInAdditiveClosureOfObjectFiniteCategory ],
+               
+  function( object )
+    return Concatenation(
+                "<An object in ", Name( CapCategory( object ) ),
+                " defined by ", String( ChecksumAndMultiplicities( object )[1] ) , " underlying objects>" );
+end );
+
+##
+InstallMethod( ViewString,
+               [ IsMorphismInAdditiveClosureOfObjectFiniteCategory ],
+               
+  function( morphism )
+    return Concatenation(
+                "<A morphism in ", Name( CapCategory( morphism ) ),
+                " defined by a ",
+                String( ChecksumAndMultiplicities( Source( morphism ) )[1] ),
+                " x ",
+                String( ChecksumAndMultiplicities( Target( morphism ) )[1] ),
+                " matrix of underlying morphisms>" );
+end );
+
+##
+InstallMethod( DisplayString,
+               [ IsObjectInAdditiveClosureOfObjectFiniteCategory ],
+               
+  function( object )
+    local AC, C, objects_of_underlying_category, nr_objects_of_underlying_category,
+          nr_objects, multiplicities, string, obj;
+    
+    AC := CapCategory( object );
+    C := UnderlyingCategory( AC );
+    objects_of_underlying_category := SetOfObjectsOfCategory( C );
+    nr_objects_of_underlying_category := NumberOfObjectsOfUnderlyingCategory( AC );
+    nr_objects := ChecksumAndMultiplicities( object )[1];
+    multiplicities := ChecksumAndMultiplicities( object )[2];
+    
+    if nr_objects = 1 then
+      
+      string := Concatenation( "A formal direct sum consisting of ", String( nr_objects ), " object.\n" );
+      
+    else
+      
+      string := Concatenation( "A formal direct sum consisting of ", String( nr_objects ), " objects.\n" );
+      
+    fi;
+    
+    for obj in [ 1 .. nr_objects_of_underlying_category  ] do
+        
+        string := Concatenation( string, String( multiplicities[ obj ] ), " times: " );
+        
+        string := Concatenation( string, ViewString( objects_of_underlying_category[ obj ] ), "\n" );
+        
+    od;
+    
+    return string;
+    
+end );
+
+##
+InstallMethod( DisplayString,
+               [ IsMorphismInAdditiveClosureOfObjectFiniteCategory ],
+               
+  function( morphism )
+    local nr_rows, nr_cols, string, i, j;
+    
+    nr_rows := ChecksumAndMultiplicities( Source( morphism ) )[1];
+    nr_cols := ChecksumAndMultiplicities( Target( morphism ) )[1];
+    
+    string := Concatenation( "A ", String( nr_rows ), " x ", String( nr_cols ),
+                             " matrix with entries in ",
+                             Name( UnderlyingCategory( CapCategory( morphism ) ) ), "\n" );
+    
+    for i in [ 1 .. nr_rows ] do
+        
+        for j in [ 1 .. nr_cols ] do
+            
+            string := Concatenation( string, Concatenation( "\n[", String(i), ",", String(j), "]: " ) );
+            
+            string := Concatenation( string, ViewString( morphism[i, j] ) );
+            
+        od;
+        
+    od;
+    
+    string := Concatenation( string, "\n" );
+    
+    return string;
+    
+end );
+
