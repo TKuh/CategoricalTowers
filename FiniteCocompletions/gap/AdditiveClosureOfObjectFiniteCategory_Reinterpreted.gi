@@ -5,13 +5,13 @@
 #
 
 ##
-InstallMethod( AdditiveClosureOfObjectFiniteCategory,
+InstallMethod( AdditiveClosureOfObjectFiniteCategory_Reinterpreted,
                [ IsCapCategory ],
-               ADDITIVE_CLOSURE_Of_OBJECT_FINITE_CATEGORY
+               ADDITIVE_CLOSURE_Of_OBJECT_FINITE_CATEGORY_REINTERPRETED
 );
 
 ##
-InstallMethod( ADDITIVE_CLOSURE_Of_OBJECT_FINITE_CATEGORY,
+InstallMethod( ADDITIVE_CLOSURE_Of_OBJECT_FINITE_CATEGORY_REINTERPRETED,
                [ IsCapCategory ],
         
   FunctionWithNamedArguments(
@@ -230,10 +230,10 @@ InstallMethod( ADDITIVE_CLOSURE_Of_OBJECT_FINITE_CATEGORY,
     ##
     AC_objfin :=
       ReinterpretationOfCategory( AC,
-              rec( name := Concatenation( "AdditiveClosureOfObjectFiniteCategory( ", Name( C ), " )" ),
-                   category_filter := IsAdditiveClosureOfObjectFiniteCategory,
-                   category_object_filter := IsObjectInAdditiveClosureOfObjectFiniteCategory,
-                   category_morphism_filter := IsMorphismInAdditiveClosureOfObjectFiniteCategory,
+              rec( name := Concatenation( "AdditiveClosureOfObjectFiniteCategory_Reinterpreted( ", Name( C ), " )" ),
+                   category_filter := IsAdditiveClosureOfObjectFiniteCategory_Reinterpreted,
+                   category_object_filter := IsObjectInAdditiveClosureOfObjectFiniteCategory_Reinterpreted,
+                   category_morphism_filter := IsMorphismInAdditiveClosureOfObjectFiniteCategory_Reinterpreted,
                    object_datum_type := object_datum_type,
                    morphism_datum_type := morphism_datum_type,
                    object_constructor := object_constructor,
@@ -277,7 +277,7 @@ end ) );
 
 ##
 InstallOtherMethod( \/,
-               [ IsList, IsAdditiveClosureOfObjectFiniteCategory ],
+               [ IsList, IsAdditiveClosureOfObjectFiniteCategory_Reinterpreted ],
                
   function( listlist, AC_objfin )
     local AC, C, obj_ac,  source_ac, source, target_ac, target, mor;
@@ -332,7 +332,7 @@ end;
 
 ##
 InstallOtherMethod( \/,
-               [ IsCapCategoryObject, IsAdditiveClosureOfObjectFiniteCategory ],
+               [ IsCapCategoryObject, IsAdditiveClosureOfObjectFiniteCategory_Reinterpreted ],
                
   function( obj, AC_objfin )
     local set_of_objects, pos, positions;
@@ -349,7 +349,7 @@ end );
 
 ##
 InstallOtherMethod( \/,
-               [ IsCapCategoryMorphism, IsAdditiveClosureOfObjectFiniteCategory ],
+               [ IsCapCategoryMorphism, IsAdditiveClosureOfObjectFiniteCategory_Reinterpreted ],
                
   function( alpha, AC_objfin )
     local set_of_objects, source, target;
@@ -367,12 +367,12 @@ end );
 
 ##
 InstallMethodForCompilerForCAP( \[\,\],
-               [ IsMorphismInAdditiveClosureOfObjectFiniteCategory, IsInt, IsInt ],
+               [ IsMorphismInAdditiveClosureOfObjectFiniteCategory_Reinterpreted, IsInt, IsInt ],
                
   function( morphism, i, j )
     
-    if not ( i < ChecksumAndMultiplicities( Source( morphism ) )[1] and
-             j < ChecksumAndMultiplicities( Target( morphism ) )[1] ) then
+    if not ( i <= ChecksumAndMultiplicities( Source( morphism ) )[1] and
+             j <= ChecksumAndMultiplicities( Target( morphism ) )[1] ) then
         
         Error( "out of bounds index [", String(i), ",", String(j),
                "] for the morphism matrix.\n" );
@@ -391,7 +391,7 @@ end );
 
 ##
 InstallMethod( ViewString,
-               [ IsObjectInAdditiveClosureOfObjectFiniteCategory ],
+               [ IsObjectInAdditiveClosureOfObjectFiniteCategory_Reinterpreted ],
                
   function( object )
     return Concatenation(
@@ -401,7 +401,7 @@ end );
 
 ##
 InstallMethod( ViewString,
-               [ IsMorphismInAdditiveClosureOfObjectFiniteCategory ],
+               [ IsMorphismInAdditiveClosureOfObjectFiniteCategory_Reinterpreted ],
                
   function( morphism )
     return Concatenation(
@@ -415,7 +415,7 @@ end );
 
 ##
 InstallMethod( DisplayString,
-               [ IsObjectInAdditiveClosureOfObjectFiniteCategory ],
+               [ IsObjectInAdditiveClosureOfObjectFiniteCategory_Reinterpreted ],
                
   function( object )
     local AC, C, objects_of_underlying_category, nr_objects_of_underlying_category,
@@ -452,7 +452,7 @@ end );
 
 ##
 InstallMethod( DisplayString,
-               [ IsMorphismInAdditiveClosureOfObjectFiniteCategory ],
+               [ IsMorphismInAdditiveClosureOfObjectFiniteCategory_Reinterpreted ],
                
   function( morphism )
     local nr_rows, nr_cols, string, i, j;

@@ -9,7 +9,7 @@
 
 #! Let $C$ be an Ab-category with finitely many objects.
 #! The objects of the disconnected additive closure are the same as those of
-#! <C>AdditiveClosureOfObjectFiniteCategory</C>, see
+#! <C>AdditiveClosureOfObjectFiniteCategory_Reinterpreted</C>, see
 #! Chapter <Ref Chap="Chapter_AdditiveClosureObjectFinite" />.
 #! 
 #! Recall, that the morphisms in the (general) additive closure $C^\oplus$ are given by
@@ -33,7 +33,7 @@
 #! \end{center}
 #! @EndLatexOnly
 #! in $C^\oplus$ is given by the below left matrix.
-#! This will be reordered into the below middle matrix (via <C>AdditiveClosureOfObjectFiniteCategory</C>)
+#! This will be reordered into the below middle matrix (via <C>AdditiveClosureOfObjectFiniteCategory_Reinterpreted</C>)
 #! for the corresponding morphism
 #! @BeginLatexOnly
 #! \begin{center}

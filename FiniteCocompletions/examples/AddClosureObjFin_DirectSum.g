@@ -13,7 +13,7 @@ Q := HomalgFieldOfRationals( );
 #! Q
 L := Q[P];
 #! Q-LinearClosure( PathCategory( FinQuiver( "q(a,b)[]" ) ) )
-A := AdditiveClosureOfObjectFiniteCategory( L );;
+A := AdditiveClosureOfObjectFiniteCategory_Reinterpreted( L );;
 a := ObjectConstructor( A, [1,[1,0]] );;
 b := ObjectConstructor( A, [1,[0,1]] );;
 diag := [ b, a, b ];;

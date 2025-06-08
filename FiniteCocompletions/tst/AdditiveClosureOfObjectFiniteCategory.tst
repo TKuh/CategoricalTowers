@@ -1,4 +1,4 @@
-gap> START_TEST("AdditiveClosureOfObjectFiniteCategory.tst");
+gap> START_TEST("AdditiveClosureOfObjectFiniteCategory_Reinterpreted.tst");
 gap> 
 gap> LoadPackage( "FiniteCocompletions", false );
 true
@@ -9,7 +9,7 @@ gap> q := FinQuiver( "q(a,b,c)[ab:a->b,ba:b->a,ca:c->a,cb:c->b]" );;
 gap> P := PathCategory( q );;
 gap> Q := HomalgFieldOfRationals( );;
 gap> L := Q[P];;
-gap> AC_fin := AdditiveClosureOfObjectFiniteCategory( L );;
+gap> AC_fin := AdditiveClosureOfObjectFiniteCategory_Reinterpreted( L );;
 gap> AC := ModelingCategory( AC_fin );;
 gap> 
 gap> a := P.a / L;;
@@ -88,4 +88,4 @@ gap> target := ModelingTowerObjectConstructor( AC_fin, ObjectDatum( AC_fin, Targ
 gap> mor_model = ModelingTowerMorphismConstructor( AC_fin, source, MorphismDatum( AC_fin, mor_reinterp ), target );
 false
 gap> 
-gap> STOP_TEST("AdditiveClosureOfObjectFiniteCategory.tst", 1);
+gap> STOP_TEST("AdditiveClosureOfObjectFiniteCategory_Reinterpreted.tst", 1);

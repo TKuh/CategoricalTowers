@@ -13,7 +13,7 @@ Q := HomalgFieldOfRationals( );
 #! Q
 L := Q[P];
 #! Q-LinearClosure( PathCategory( FinQuiver( "q(a,b,c,d)[]" ) ) )
-A := AdditiveClosureOfObjectFiniteCategory( L );;
+A := AdditiveClosureOfObjectFiniteCategory_Reinterpreted( L );;
 source := ObjectConstructor( A, [3,[2,1,0,0]] );;
 target := ObjectConstructor( A, [2,[0,1,1,0]] );;
 id_b := IdentityMorphism( P.b ) / L;;

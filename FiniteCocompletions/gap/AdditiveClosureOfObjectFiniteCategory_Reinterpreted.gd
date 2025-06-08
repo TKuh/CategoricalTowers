@@ -73,21 +73,21 @@
 #!  The GAP category of additive closures of object finite Ab-categories.
 #! @Arguments object
 #! @Returns true or false
-DeclareCategory( "IsAdditiveClosureOfObjectFiniteCategory",
+DeclareCategory( "IsAdditiveClosureOfObjectFiniteCategory_Reinterpreted",
                  IsCapCategory );
 
 #! @Description
 #!  The GAP category of objects in additive closures of object finite Ab-categories.
 #! @Arguments object
 #! @Returns true or false
-DeclareCategory( "IsObjectInAdditiveClosureOfObjectFiniteCategory",
+DeclareCategory( "IsObjectInAdditiveClosureOfObjectFiniteCategory_Reinterpreted",
                  IsCapCategoryObject );
 
 #! @Description
 #!  The GAP category of morphisms in additive closures of object finite Ab-categories.
 #! @Arguments object
 #! @Returns true or false
-DeclareCategory( "IsMorphismInAdditiveClosureOfObjectFiniteCategory",
+DeclareCategory( "IsMorphismInAdditiveClosureOfObjectFiniteCategory_Reinterpreted",
                  IsCapCategoryMorphism );
 
 ####################################
@@ -100,39 +100,39 @@ DeclareCategory( "IsMorphismInAdditiveClosureOfObjectFiniteCategory",
 #!  The argument is an object finite Ab-category $C$. The output is its additive closure $C^\oplus$.
 #! @Arguments C
 #! @Returns the category $C^\oplus$
-DeclareAttribute( "AdditiveClosureOfObjectFiniteCategory",
+DeclareAttribute( "AdditiveClosureOfObjectFiniteCategory_Reinterpreted",
                   IsCapCategory );
 
 #! @Description
-#!  Same as <Ref Attr="AdditiveClosureOfObjectFiniteCategory" Label="for IsCapCategory" />, but as an operation instead of an attribute.
+#!  Same as <Ref Attr="AdditiveClosureOfObjectFiniteCategory_Reinterpreted" Label="for IsCapCategory" />, but as an operation instead of an attribute.
 #! @Arguments C
 #! @Returns the category $C^\oplus$
-DeclareOperation( "ADDITIVE_CLOSURE_Of_OBJECT_FINITE_CATEGORY",
+DeclareOperation( "ADDITIVE_CLOSURE_Of_OBJECT_FINITE_CATEGORY_REINTERPRETED",
                   [ IsCapCategory ] );
 
 if false then
 #! @Description
-#! The input is an additive closure <A>AC</A><C> := AdditiveClosureOfObjectFiniteCategory(</C> $A$ <C>)</C>
+#! The input is an additive closure <A>AC</A><C> := AdditiveClosureOfObjectFiniteCategory_Reinterpreted(</C> $A$ <C>)</C>
 #! of an object finite Ab-category <A>A</A> and a list of the format
 #! $[ i, [ i_1, ..., i_n ] ]$ representing a direct sum $A_1^{i_1} \oplus \dots \oplus A_n^{i_n}$ where
 #! * $A_1, \dots, A_n$ are all of the objects in the underlying category;
 #! * $i_1, ..., i_n$ are integers representing the multiplicties;
 #! * $i$ is the sum of integers $i_1 + \dots + i_n$.
-#! See also <Ref Attr="ChecksumAndMultiplicities" Label="for IsObjectInAdditiveClosureOfObjectFiniteCategory" />.
+#! See also <Ref Attr="ChecksumAndMultiplicities" Label="for IsObjectInAdditiveClosureOfObjectFiniteCategory_Reinterpreted" />.
 #! @Arguments AC, l
 #! @Returns a &CAP; category object
-DeclareOperation( "ObjectConstructor", [ IsAdditiveClosureOfObjectFiniteCategory, IsList ] );
+DeclareOperation( "ObjectConstructor", [ IsAdditiveClosureOfObjectFiniteCategory_Reinterpreted, IsList ] );
 
 #! @Description
-#! The input is an additive closure <A>AC</A><C> := AdditiveClosureOfObjectFiniteCategory(</C> $A$ <C>)</C>
+#! The input is an additive closure <A>AC</A><C> := AdditiveClosureOfObjectFiniteCategory_Reinterpreted(</C> $A$ <C>)</C>
 #! of an object finite Ab-category <A>A</A>,
 #! * <A>s</A> is the source object,
 #! * <A>matrix</A> is a list of lists of morphisms in A,
 #! * <A>t</A> is the target object.
-#! See also <Ref Attr="MorphismMatrix" Label="for IsMorphismInAdditiveClosureOfObjectFiniteCategory" />.
+#! See also <Ref Attr="MorphismMatrix" Label="for IsMorphismInAdditiveClosureOfObjectFiniteCategory_Reinterpreted" />.
 #! @Arguments AC, s, matrix, t
 #! @Returns a &CAP; category morphism
-DeclareOperation( "MorphismConstructor", [ IsAdditiveClosureOfObjectFiniteCategory, ] );
+DeclareOperation( "MorphismConstructor", [ IsAdditiveClosureOfObjectFiniteCategory_Reinterpreted, ] );
 fi;
 
 ####################################
@@ -150,12 +150,12 @@ fi;
 #! @Arguments object
 #! @Returns A list consisting of an integer and a list of integers.
 DeclareAttribute( "ChecksumAndMultiplicities",
-        IsObjectInAdditiveClosureOfObjectFiniteCategory );
+        IsObjectInAdditiveClosureOfObjectFiniteCategory_Reinterpreted );
 
-CapJitAddTypeSignature( "ChecksumAndMultiplicities", [ IsObjectInAdditiveClosureOfObjectFiniteCategory ],
+CapJitAddTypeSignature( "ChecksumAndMultiplicities", [ IsObjectInAdditiveClosureOfObjectFiniteCategory_Reinterpreted ],
  function ( input_types )
     
-    Assert( 0, IsAdditiveClosureOfObjectFiniteCategory( input_types[1].category ) );
+    Assert( 0, IsAdditiveClosureOfObjectFiniteCategory_Reinterpreted( input_types[1].category ) );
     
     return CapJitDataTypeOfNTupleOf( 2,
                    IsBigInt,
@@ -169,12 +169,12 @@ end );
 #! @Arguments morphism
 #! @Returns A list of lists of morphisms of the underlying category.
 DeclareAttribute( "MorphismMatrix",
-        IsMorphismInAdditiveClosureOfObjectFiniteCategory );
+        IsMorphismInAdditiveClosureOfObjectFiniteCategory_Reinterpreted );
 
-CapJitAddTypeSignature( "MorphismMatrix", [ IsMorphismInAdditiveClosureOfObjectFiniteCategory ],
+CapJitAddTypeSignature( "MorphismMatrix", [ IsMorphismInAdditiveClosureOfObjectFiniteCategory_Reinterpreted ],
  function ( input_types )
     
-    Assert( 0, IsAdditiveClosureOfObjectFiniteCategory( input_types[1].category ) );
+    Assert( 0, IsAdditiveClosureOfObjectFiniteCategory_Reinterpreted( input_types[1].category ) );
     
     return CapJitDataTypeOfListOf(
                 CapJitDataTypeOfListOf(
@@ -184,13 +184,13 @@ end );
 
 #! @Description
 #!  Return the category $A$ underlying the additive closure
-#!  <A>AC</A><C> := AdditiveClosureOfObjectFiniteCategory(</C> $A$ <C>)</C>.
+#!  <A>AC</A><C> := AdditiveClosureOfObjectFiniteCategory_Reinterpreted(</C> $A$ <C>)</C>.
 #! @Arguments AC
 #! @Return a &CAP; category
 DeclareAttribute( "UnderlyingCategory",
-        IsAdditiveClosureOfObjectFiniteCategory );
+        IsAdditiveClosureOfObjectFiniteCategory_Reinterpreted );
 
-CapJitAddTypeSignature( "UnderlyingCategory", [ IsAdditiveClosureOfObjectFiniteCategory ],
+CapJitAddTypeSignature( "UnderlyingCategory", [ IsAdditiveClosureOfObjectFiniteCategory_Reinterpreted ],
   function ( input_types )
     
     return CapJitDataTypeOfCategory( UnderlyingCategory( input_types[1].category ) );
@@ -199,13 +199,13 @@ end );
 
 #! @Description
 #!  Return the number of objects in the category $A$ underlying the additive closure
-#!  <A>AC</A><C> := AdditiveClosureOfObjectFiniteCategory(</C> $A$ <C>)</C>.
+#!  <A>AC</A><C> := AdditiveClosureOfObjectFiniteCategory_Reinterpreted(</C> $A$ <C>)</C>.
 #! @Arguments AC
 #! @Returns An integer
 DeclareAttribute( "NumberOfObjectsOfUnderlyingCategory",
-        IsAdditiveClosureOfObjectFiniteCategory );
+        IsAdditiveClosureOfObjectFiniteCategory_Reinterpreted );
 
-CapJitAddTypeSignature( "NumberOfObjectsOfUnderlyingCategory", [ IsAdditiveClosureOfObjectFiniteCategory ],
+CapJitAddTypeSignature( "NumberOfObjectsOfUnderlyingCategory", [ IsAdditiveClosureOfObjectFiniteCategory_Reinterpreted ],
   function ( input_types )
     
     return IsBigInt;
@@ -225,11 +225,11 @@ end );
 #! @Arguments alpha, i, j
 #! @Returns a &CAP; category morphism in $C$
 DeclareOperation( "[,]",
-                  [ IsMorphismInAdditiveClosureOfObjectFiniteCategory, IsInt, IsInt ] );
+                  [ IsMorphismInAdditiveClosureOfObjectFiniteCategory_Reinterpreted, IsInt, IsInt ] );
 
-CapJitAddTypeSignature( "[,]", [ IsMorphismInAdditiveClosureOfObjectFiniteCategory, IsInt, IsInt ], function ( input_types )
+CapJitAddTypeSignature( "[,]", [ IsMorphismInAdditiveClosureOfObjectFiniteCategory_Reinterpreted, IsInt, IsInt ], function ( input_types )
     
-    Assert( 0, IsAdditiveClosureOfObjectFiniteCategory( input_types[1].category ) );
+    Assert( 0, IsAdditiveClosureOfObjectFiniteCategory_Reinterpreted( input_types[1].category ) );
     
     return CapJitDataTypeOfMorphismOfCategory( UnderlyingCategory( input_types[1].category ) );
     
@@ -240,13 +240,13 @@ end );
 #! * a list of objects or
 #! * a list of lists of morphisms
 #! in the underlying category.
-#! This operation then constructs either an object or a morphism in <C>AdditiveClosureOfObjectFiniteCategory</C>.
+#! This operation then constructs either an object or a morphism in <C>AdditiveClosureOfObjectFiniteCategory_Reinterpreted</C>.
 DeclareOperation( "/",
-                  [ IsList, IsAdditiveClosureOfObjectFiniteCategory ] );
+                  [ IsList, IsAdditiveClosureOfObjectFiniteCategory_Reinterpreted ] );
 
 #! @Description
 #! This is a convenience method for
 #! <C>ObjectConstructor</C> and <C>MorphismConstructor</C>.
 DeclareOperation( "/",
-                  [ IsCapCategoryCell, IsAdditiveClosureOfObjectFiniteCategory ] );
+                  [ IsCapCategoryCell, IsAdditiveClosureOfObjectFiniteCategory_Reinterpreted ] );
 

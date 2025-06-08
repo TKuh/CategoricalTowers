@@ -97,7 +97,7 @@ InstallMethod( DISCONNECTED_ADDITIVE_CLOSURE,
     
     ## Building the categorical tower:
     
-    AC_objfin := AdditiveClosureOfObjectFiniteCategory( C : FinalizeCategory := true );
+    AC_objfin := AdditiveClosureOfObjectFiniteCategory_Reinterpreted( C : FinalizeCategory := true );
     
     ## From the raw object data to the object in the modeling category
     modeling_tower_object_constructor :=
