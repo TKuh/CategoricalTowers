@@ -1,0 +1,12 @@
+LoadPackage( "FiniteCocompletions", false );
+LoadPackage( "FunctorCategories", false );
+q := FinQuiver( "q(a,b)[]" );;
+P := PathCategory( q );;
+Q := HomalgFieldOfRationals( );;
+L := Q[P];;
+A := AdditiveClosureOfObjectFiniteDisconnectedCategoryGReps( L );;
+aabb := ObjectConstructor( A, [ [ 2, P.a / L ], [ 2, P.b / L ] ] );;
+id_a := IdentityMorphism( P.a ) / L;;
+id_b := IdentityMorphism( P.b ) / L;;
+matrix := [ [ [ id_a, -1*id_a ], [ -1*id_a, id_a ] ], [ [ 2*id_b, 2*id_b ], [ 4*id_b, 4*id_b ] ] ];;
+m := MorphismConstructor( A, aabb, matrix, aabb );;
