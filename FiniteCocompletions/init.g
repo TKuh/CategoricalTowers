@@ -32,6 +32,12 @@ ReadPackage( "FiniteCocompletions", "gap/FiniteColimitCompletionWithStrictCoprod
 ReadPackage( "FiniteCocompletions", "gap/AdditiveClosure.gd");
 
 ##
+ReadPackage( "FiniteCocompletions", "gap/AdditiveClosureOfObjectFiniteCategory.gd");
+
+##
+ReadPackage( "FiniteCocompletions", "gap/AdditiveClosureOfObjectFiniteDisconnectedCategory.gd");
+
+##
 ReadPackage( "FiniteCocompletions", "gap/FreydCategory.gd");
 
 ##
