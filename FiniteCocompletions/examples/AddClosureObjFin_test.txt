@@ -1,0 +1,141 @@
+#! @BeginChunk AddClosureObjFinTest
+
+#! @Example
+LoadPackage( "FiniteCocompletions", false );
+#! true
+LoadPackage( "FunctorCategories", false );
+#! true
+q := FinQuiver( "q(a,b)[]" );
+#! FinQuiver( "q(a,b)[]" )
+P := PathCategory( q );
+#! PathCategory( FinQuiver( "q(a,b)[]" ) )
+Q := HomalgFieldOfRationals( );
+#! Q
+L := Q[P];
+#! Q-LinearClosure( PathCategory( FinQuiver( "q(a,b)[]" ) ) )
+A := AdditiveClosureOfObjectFiniteCategory( L );;
+a := ObjectConstructor( A, [1,[1,0]] );;
+b := ObjectConstructor( A, [1,[0,1]] );;
+ObjectDatum( a );
+#! [ 1, [ 1, 0 ] ]
+Display( b );
+#! A formal direct sum consisting of 1 object:
+#! 0 times: (a)
+#! 1 times: (b)
+Display( ZeroObject( A ) );
+#! A formal direct sum consisting of 0 objects:
+#! 0 times: (a)
+#! 0 times: (b)
+aab := AdditiveClosureObject( A, [3,[2,1]] );;
+aab = DirectSum( [ a, b, a ] );
+#! true
+aab[1] = L.a;
+#! true
+aab[2] = L.a;
+#! true
+aab[3] = L.b;
+#! true
+id_aab := IdentityMorphism( aab );;
+z := ZeroMorphism( aab, b );;
+MorphismDatum( z );
+#! [ [ 0:(a) -≻ (b) ], [ 0:(a) -≻ (b) ], [ 0:(b) -≻ (b) ] ]
+Display( z );
+#! A 3 x 1 matrix with entries in Q-LinearClosure( PathCategory( FinQuiver( "q(a,b)[]" ) ) )
+#! 
+#! [1,1]: 0:(a) -≻ (b)
+#! [2,1]: 0:(a) -≻ (b)
+#! [3,1]: 0:(b) -≻ (b)
+IsZeroForMorphisms( z );
+#! true
+z_aab := ZeroMorphism( aab, aab );;
+IsEqualForMorphisms( id_aab, z_aab );
+#! false
+IsEqualForMorphisms( id_aab, id_aab );
+#! true
+IsCongruentForMorphisms( id_aab, z_aab );
+#! false
+IsCongruentForMorphisms( id_aab, id_aab );
+#! true
+PreCompose( id_aab, z_aab );
+#! <A morphism in AdditiveClosureOfObjectFiniteCategory( Q-LinearClosure( PathCategory( FinQuiver( "q(a,b)[]" ) ) ) )
+#! defined by a 3 x 3 matrix of underlying morphisms>
+Display( AdditionForMorphisms( id_aab, id_aab ) );
+#! A 3 x 3 matrix with entries in Q-LinearClosure( PathCategory( FinQuiver( "q(a,b)[]" ) ) )
+#!
+#! [1,1]: 2*id(a):(a) -≻ (a)
+#! [1,2]: 0:(a) -≻ (a)
+#! [1,3]: 0:(a) -≻ (b)
+#! [2,1]: 0:(a) -≻ (a)
+#! [2,2]: 2*id(a):(a) -≻ (a)
+#! [2,3]: 0:(a) -≻ (b)
+#! [3,1]: 0:(b) -≻ (a)
+#! [3,2]: 0:(b) -≻ (a)
+#! [3,3]: 2*id(b):(b) -≻ (b)
+Display( SumOfMorphisms( Source( id_aab ), [ id_aab, z_aab, id_aab ], Target( id_aab ) ) );
+#! A 3 x 3 matrix with entries in Q-LinearClosure( PathCategory( FinQuiver( "q(a,b)[]" ) ) )
+#!
+#! [1,1]: 2*id(a):(a) -≻ (a)
+#! [1,2]: 0:(a) -≻ (a)
+#! [1,3]: 0:(a) -≻ (b)
+#! [2,1]: 0:(a) -≻ (a)
+#! [2,2]: 2*id(a):(a) -≻ (a)
+#! [2,3]: 0:(a) -≻ (b)
+#! [3,1]: 0:(b) -≻ (a)
+#! [3,2]: 0:(b) -≻ (a)
+#! [3,3]: 2*id(b):(b) -≻ (b)
+Display( AdditiveInverseForMorphisms( id_aab ) );
+#! A 3 x 3 matrix with entries in Q-LinearClosure( PathCategory( FinQuiver( "q(a,b)[]" ) ) )
+#! 
+#! [1,1]: -1*id(a):(a) -≻ (a)
+#! [1,2]: 0:(a) -≻ (a)
+#! [1,3]: 0:(a) -≻ (b)
+#! [2,1]: 0:(a) -≻ (a)
+#! [2,2]: -1*id(a):(a) -≻ (a)
+#! [2,3]: 0:(a) -≻ (b)
+#! [3,1]: 0:(b) -≻ (a)
+#! [3,2]: 0:(b) -≻ (a)
+#! [3,3]: -1*id(b):(b) -≻ (b)
+diag := [ a, a, b ];;
+pr1 := ProjectionInFactorOfDirectSum( diag, 1 );;
+pr2 := ProjectionInFactorOfDirectSum( diag, 2 );;
+pr3 := ProjectionInFactorOfDirectSum( diag, 3 );;
+u := UniversalMorphismIntoDirectSumWithGivenDirectSum( diag, [ pr1, pr2, pr3 ], aab );;
+IsWellDefinedForMorphisms( u );
+#! true
+inj1 := InjectionOfCofactorOfDirectSum( diag, 1 );;
+inj2 := InjectionOfCofactorOfDirectSum( diag, 2 );;
+inj3 := InjectionOfCofactorOfDirectSum( diag, 3 );;
+u := UniversalMorphismFromDirectSumWithGivenDirectSum( diag, [ inj1, inj2, inj3 ], aab  );;
+IsWellDefinedForMorphisms( u );
+#! true
+comp := ComponentOfMorphismIntoDirectSum( inj1, [ a, a, b ], 3 );;
+IsWellDefined( comp );
+#! true
+Display( comp );
+#! A 1 x 1 matrix with entries in Q-LinearClosure( PathCategory( FinQuiver( "q(a,b)[]" ) ) )
+#! 
+#! [1,1]: 0:(a) -≻ (b)
+comp := ComponentOfMorphismFromDirectSum( pr3, [ a, a, b ], 1 );;
+IsWellDefined( comp );
+#! true
+Display( comp );
+#! A 1 x 1 matrix with entries in Q-LinearClosure( PathCategory( FinQuiver( "q(a,b)[]" ) ) )
+#! 
+#! [1,1]: 0:(a) -≻ (b)
+Display( MultiplyWithElementOfCommutativeRingForMorphisms( 10 / Q, id_aab ) );;
+#! A 3 x 3 matrix with entries in Q-LinearClosure( PathCategory( FinQuiver( "q(a,b)[]" ) ) )
+#! 
+#! [1,1]: 10*id(a):(a) -≻ (a)
+#! [1,2]: 0:(a) -≻ (a)
+#! [1,3]: 0:(a) -≻ (b)
+#! [2,1]: 0:(a) -≻ (a)
+#! [2,2]: 10*id(a):(a) -≻ (a)
+#! [2,3]: 0:(a) -≻ (b)
+#! [3,1]: 0:(b) -≻ (a)
+#! [3,2]: 0:(b) -≻ (a)
+#! [3,3]: 10*id(b):(b) -≻ (b)
+L.a / A;;
+IdentityMorphism( L.a ) / A;;
+[ L.a, L.b, L.a ] / A;;
+#! @EndExample
+#! @EndChunk

@@ -115,6 +115,36 @@
 
 @Section Constructors
 
+@Chapter Additive closure of an object finite category
+@ChapterLabel AdditiveClosureObjectFinite
+
+@InsertChunk AddClosureIntroduction
+@InsertChunk AddClosureObjFinConstruction
+@Section Attributes
+@Section Constructors
+@Section Operations
+@Section Operators
+@Section GAP Categories
+@Section Examples
+
+@Subsection Test Monoidal
+@InsertChunk AddClosureObjFinKronecker
+
+@Chapter Disconnected additive closure
+@ChapterLabel AdditiveClosureOfObjectFiniteDisconnectedCategory
+
+@InsertChunk DisconnectedAddClosureIntroduction
+@InsertChunk DisconnectedAddClosureConstruction
+@Section Attributes
+@Section Constructors
+@Section Operations
+@Section Operators
+@Section GAP Categories
+@Section Examples
+
+@Subsection Universal morphism into the direct sum
+@InsertChunk DisconnectedAddClosureDirectSum
+
 @Chapter Cokernel closure
 
 @Section Constructors
